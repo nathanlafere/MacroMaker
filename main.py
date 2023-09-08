@@ -8,7 +8,7 @@ import pickle
 class Main:
     def __init__(self, root):
         # [0] = type of event [1] = coordinates or values [2] = delay in milliseconds
-        self.event_list = [("Mouse left click",(105,20),15),("Mouse right click",(12,44),4),("copy value",("path","cel coordinates"),0),("cop3y value",("path","cel coordinates"),0),("copy va12lue",("path","cel coordinates"),0),("copy va1lue",("path","cel coordinates"),0),("copy valu1e",("path","cel coordinates"),0),("copy 1value",("path","cel coordinates"),0),("cop1y value",("path","cel coordinates"),0)]
+        self.event_list = [("Mouse left click",(105,20),15),("Mouse right click",(12,44),4)]
         #setting window size
         root.configure(padx=7,pady=7,width=413,height=413)
         #placing the frames
@@ -22,10 +22,10 @@ class Main:
         self.inside_new_event.place(height=298,width=183,relx=0.019,rely=0.09)
         config_frame = Frame(root,background="gray81",borderwidth=4, relief=GROOVE)
         config_frame.place(x=200,y=340,height=60,width=200)
-        play_btn = Button(config_frame, font=("Onyx",7,"bold"),bg="gray55",fg="red3",text="►",height=2, width=3)
+        play_btn = Button(config_frame, font=("Onyx",12),bg="gray55",fg="red3",text="►",height=1, width=2)
         play_btn.place(anchor=CENTER,relx=0.15,rely=.5)
-        load_btn2 = Button(config_frame, font=("Onyx",7,"bold"),bg="gray55",text="⚜",height=2, width=3)
-        load_btn2.place(anchor=CENTER,relx=0.32,rely=.5)
+        load_btn2 = Button(config_frame, font=("Onyx",12),bg="gray55",text="🛠",height=1, width=2)
+        load_btn2.place(anchor=CENTER,relx=0.305,rely=.5)
         self.queue_frame = Frame(root,background="gray81",borderwidth=4, relief=GROOVE)
         self.queue_canvas = Canvas(self.queue_frame)
         self.queue_canvas.place(height=390,width=180)
@@ -202,5 +202,6 @@ class Main:
 if __name__ == "__main__":
     root = Tk(className=" Macro Maker")
     main = Main(root)
+    root.resizable(False,False)
     root.mainloop()
 
