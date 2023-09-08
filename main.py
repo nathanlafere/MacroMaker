@@ -11,12 +11,13 @@ class Main:
         self.event_list = [("Mouse left click",(105,20),15),("Mouse right click",(12,44),4)]
         #setting window size
         root.configure(padx=7,pady=7,width=413,height=413)
+        root.resizable(False,False)
         #placing the frames
         self.new_event_frame = Frame(root,background="gray81",borderwidth=4, relief=GROOVE)
         self.new_event_frame.place(x=200,y=0,height=340,width=200)
-        
+        keyboard.add_hotkey('F1',self.auto_fill)
         self.event_type = ttk.Combobox(self.new_event_frame, state="readonly",values=["Mouse click", "Copy or insert XLSX values", "Press keys", "Definir condição de fulga"],width=27)
-        self.event_type.place(anchor=CENTER,relx=0.497,rely=0.04) # criar um event handler que altera os itens abaixo do combobox para os inputs adequados para cada opção
+        self.event_type.place(anchor=CENTER,relx=0.497,rely=0.04)
         self.event_type.bind("<<ComboboxSelected>>",self.change_new_event_frame)
         self.inside_new_event = Frame(self.new_event_frame)
         self.inside_new_event.place(height=298,width=183,relx=0.019,rely=0.09)
@@ -41,10 +42,10 @@ class Main:
     def _on_mousewheel(self,event):
         self.queue_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     
-    def change_new_event_frame(self,event):
+    def change_new_event_frame(self,event=None):
         self.clear_frame(self.inside_new_event)
         new_event_info = None
-        match event.widget.get():
+        match self.event_type.get():
             case "Mouse click":
                 left_or_right = ttk.Combobox(self.inside_new_event,state= "readonly",values=["left click","right click"], width=25)
                 left_or_right.current(0)
@@ -58,7 +59,7 @@ class Main:
                 first_entry = self.create_input("X :", 0, 1, 2)
                 second_entry = self.create_input("Y :", 2, 3, 2)
                 checkbox_cvar = IntVar() 
-                checkbox = self.create_checkbox(self.inside_new_event,checkbox_cvar,event)
+                checkbox = self.create_checkbox(self.inside_new_event,checkbox_cvar,self.event_type)
                 checkbox.grid(row=3,column=0,columnspan=4,sticky=W)
                 new_event_info = (left_or_right,first_entry,second_entry,checkbox_cvar)
             case "Press keys":
@@ -77,7 +78,7 @@ class Main:
                 first_entry = self.create_input("C :", 0, 1, 1)
                 second_entry = self.create_input("R :", 2, 3, 1)
                 checkbox_cvar = IntVar() 
-                checkbox = self.create_checkbox(self.inside_new_event,checkbox_cvar,event)
+                checkbox = self.create_checkbox(self.inside_new_event,checkbox_cvar,self.event_type)
                 checkbox.grid(row=2,column=0,columnspan=4,padx=0,sticky=W)
                 new_event_info = (copy_or_insert,first_entry,second_entry,checkbox_cvar)
         confirm_button = Button(self.inside_new_event, text="Confirm", font=("Helvetica",8,"bold"),bg="gray55",fg="gray15", width=10 ,relief=GROOVE, command=lambda: self.confirm_new_event(new_event_info))
@@ -120,7 +121,7 @@ class Main:
             entry.insert(0,0)
     
     def create_variation_input(self,event,variable):
-        match event.widget.get():
+        match event.get():
             case "Mouse click":
                 if variable.get() == 1:
                     self.create_input("X :", 0, 1, 4)
@@ -195,13 +196,16 @@ class Main:
         
     def create_checkbox(self,frame,variable,event):
         return Checkbutton(frame, text="Variation per loop", variable=variable, onvalue=1, offvalue=0,command=lambda: self.create_variation_input(event,variable))
-
-
-
+    
+    def auto_fill(self):
+        self.event_type.set("Mouse click")
+        self.change_new_event_frame()
+        self.inside_new_event.grid_slaves()[3].insert(0,pyautogui.position()[0])
+        self.inside_new_event.grid_slaves()[1].insert(0,pyautogui.position()[1])
+        
 
 if __name__ == "__main__":
     root = Tk(className=" Macro Maker")
     main = Main(root)
-    root.resizable(False,False)
     root.mainloop()
 
