@@ -2,13 +2,12 @@ from tkinter import messagebox, ttk
 from tkinter import *
 import keyboard
 import pyautogui
-import os
-import pickle
+import engine
 
 class Main:
     def __init__(self, root):
         # [0] = type of event [1] = coordinates or values [2] = delay in milliseconds
-        self.event_list = [("Mouse left click",(105,20),15),("Mouse right click",(12,44),4)]
+        self.event_list = [("Mouse left click",(363,287,1,1),1000),("Mouse right click",(377,238,0,0),4)]
         #setting window size
         root.configure(padx=7,pady=7,width=413,height=413)
         root.resizable(False,False)
@@ -23,7 +22,7 @@ class Main:
         self.inside_new_event.place(height=298,width=183,relx=0.019,rely=0.09)
         config_frame = Frame(root,background="gray81",borderwidth=4, relief=GROOVE)
         config_frame.place(x=200,y=340,height=60,width=200)
-        play_btn = Button(config_frame, font=("Onyx",12),bg="gray55",fg="red3",text="►",height=1, width=2)
+        play_btn = Button(config_frame, font=("Onyx",12),bg="gray55",fg="red3",text="►",height=1, width=2, command= lambda:engine.run_macro(self.event_list))
         play_btn.place(anchor=CENTER,relx=0.15,rely=.5)
         load_btn2 = Button(config_frame, font=("Onyx",12),bg="gray55",text="🛠",height=1, width=2)
         load_btn2.place(anchor=CENTER,relx=0.305,rely=.5)
@@ -91,7 +90,7 @@ class Main:
                 if (new_event_info[1].get() != '' and new_event_info[2].get() != ''):
                     self.empty_entry(self.inside_new_event.grid_slaves()[-3])
                     if new_event_info[3].get() == 0:
-                        new_event = (f'Mouse {new_event_info[0].get()}',(new_event_info[1].get(),new_event_info[2].get()),self.inside_new_event.grid_slaves()[-3].get())
+                        new_event = (f'Mouse {new_event_info[0].get()}',(new_event_info[1].get(),new_event_info[2].get(),0,0),self.inside_new_event.grid_slaves()[-3].get())
                     else:
                         self.empty_entry(self.inside_new_event.grid_slaves()[0])
                         self.empty_entry(self.inside_new_event.grid_slaves()[2])
@@ -103,7 +102,7 @@ class Main:
             case "Copy or insert XLSX values":
                 if (new_event_info[1].get() != '' and new_event_info[2].get() != ''):
                     if new_event_info[3].get() == 0:
-                        new_event = (new_event_info[0].get(),(new_event_info[1].get(),new_event_info[2].get()))
+                        new_event = (new_event_info[0].get(),(new_event_info[1].get(),new_event_info[2].get(),0,0))
                     else:
                         self.empty_entry(self.inside_new_event.grid_slaves()[0])
                         self.empty_entry(self.inside_new_event.grid_slaves()[2])
@@ -155,8 +154,14 @@ class Main:
         up_btn.place(anchor='e',relx=0.821,rely=0.15)
         down_btn = Button(event_frame, font=("Onyx",6),bg="gray55",fg="red3",text="▼",height=1, width=1, command=lambda:self.change_order(event,1))
         down_btn.place(anchor='e',relx=0.909,rely=0.15)
+        edit_btn = Button(event_frame, font=("Onyx",6,"bold"),bg="gray55",fg="red3",text="🛠",height=1, width=1)
+        edit_btn.place(anchor='e',relx=0.733,rely=0.15)
         type_text = Label(event_frame,text=event[0].capitalize(),bg="gray63",border=True, font=("Nyala",9,"bold"))
-
+        if "Press" in event[0]:
+            values_text = Label(event_frame,text=f'Press key {event[1].capitalize()}',bg="gray63",border=True, font=("Nyala",8))
+        elif event[1][2] != 0 and event[1][3] != 0:
+            delay_text = Label(event_frame,text=f'C={event[1][2]}|{event[1][3]}',bg="gray63",border=True, font=("Nyala",8))
+            delay_text.place(relx=0.71,rely=0.65)
         if event[0] in ["Mouse right click", "Mouse left click", "Press keys"]:
             delay_text = Label(event_frame,text=f'Delay={event[2]}',bg="gray63",border=True, font=("Nyala",8))
             delay_text.place(relx=0.01,rely=0.65)
@@ -164,8 +169,6 @@ class Main:
             values_text = Label(event_frame,text=f'X={event[1][0]} Y={event[1][1]}',bg="gray63",border=True, font=("Nyala",8))
         elif event[0] in ["Copy","Insert"]:
             values_text = Label(event_frame,text=f'{event[0]} value in row {event[1][0]} column {event[1][1]}',bg="gray63",border=True, font=("Nyala",8))
-        elif "Press" in event[0]:
-            values_text = Label(event_frame,text=f'Press key {event[1].capitalize()}',bg="gray63",border=True, font=("Nyala",8))
         else:
             values_text = Label(event_frame,text="Error",bg="gray63",border=True, font=("Nyala",8))
 
